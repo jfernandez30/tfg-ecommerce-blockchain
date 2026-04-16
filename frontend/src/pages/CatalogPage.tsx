@@ -2,14 +2,23 @@ import { useState, useEffect } from 'react'
 import type { Product, Category } from '../types/index'
 import { api } from '../lib/api'
 import { useAuth } from '../context/AuthContext'
+import { useCart } from '../context/CartContext'
+import CartDrawer from '../components/CartDrawer'
 
-export default function CatalogPage() {
+interface CatalogPageProps {
+  onCheckout: () => void
+}
+
+export default function CatalogPage({ onCheckout }: CatalogPageProps) {
   const { user, logout } = useAuth()
+  const { addItem, itemCount } = useCart()
   const [products, setProducts] = useState<Product[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [selectedCategory, setSelectedCategory] = useState<string>('')
   const [search, setSearch] = useState<string>('')
   const [loading, setLoading] = useState(true)
+  const [cartOpen, setCartOpen] = useState(false)
+  const [added, setAdded] = useState<string | null>(null)
 
   useEffect(() => {
     api.get('/api/categories').then(data => setCategories(data.categories || []))
@@ -26,13 +35,32 @@ export default function CatalogPage() {
       .finally(() => setLoading(false))
   }, [selectedCategory, search])
 
+  const handleAddToCart = (product: Product) => {
+    addItem(product)
+    setAdded(product.id)
+    setTimeout(() => setAdded(null), 1500)
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow-sm sticky top-0 z-10">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <h1 className="text-xl font-bold text-indigo-600">TFG Ecommerce</h1>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-600">Hola, {user?.name || user?.email}</span>
+            <span className="text-sm text-gray-600 hidden sm:block">
+              Hola, {user?.name || user?.email}
+            </span>
+            <button
+              onClick={() => setCartOpen(true)}
+              className="relative p-2 text-gray-600 hover:text-indigo-600 transition"
+            >
+              🛒
+              {itemCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-indigo-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+                  {itemCount}
+                </span>
+              )}
+            </button>
             <button
               onClick={logout}
               className="text-sm text-gray-500 hover:text-red-500 transition"
@@ -89,8 +117,16 @@ export default function CatalogPage() {
                     <span className="text-lg font-bold text-indigo-600">{Number(product.price).toFixed(2)} €</span>
                     <span className="text-xs text-gray-400">{product.stock} en stock</span>
                   </div>
-                  <button className="w-full mt-3 bg-indigo-600 text-white rounded-lg py-2 text-sm font-medium hover:bg-indigo-700 transition">
-                    Añadir al carrito
+                  <button
+                    onClick={() => handleAddToCart(product)}
+                    disabled={product.stock === 0}
+                    className={`w-full mt-3 rounded-lg py-2 text-sm font-medium transition ${
+                      added === product.id
+                        ? 'bg-green-500 text-white'
+                        : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                    } disabled:opacity-50 disabled:cursor-not-allowed`}
+                  >
+                    {added === product.id ? '✓ Añadido' : product.stock === 0 ? 'Sin stock' : 'Añadir al carrito'}
                   </button>
                 </div>
               </div>
@@ -98,6 +134,15 @@ export default function CatalogPage() {
           </div>
         )}
       </main>
+
+      <CartDrawer
+        open={cartOpen}
+        onClose={() => setCartOpen(false)}
+        onCheckout={() => {
+          setCartOpen(false)
+          onCheckout()
+        }}
+      />
     </div>
   )
 }
