@@ -1,16 +1,17 @@
 import type { HardhatUserConfig } from "hardhat/config";
-import "@nomicfoundation/hardhat-toolbox-viem";
+import toolboxViem from "@nomicfoundation/hardhat-toolbox-viem";
 import dotenv from "dotenv";
 
 dotenv.config();
 
 const config: HardhatUserConfig = {
   solidity: "0.8.28",
-  networks: process.env.ALCHEMY_URL ? {
-    mumbai: {
+  plugins: [toolboxViem],
+  networks: process.env.ALCHEMY_URL && process.env.PRIVATE_KEY ? {
+    amoy: {
       type: "http",
       url: process.env.ALCHEMY_URL,
-      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+      accounts: [process.env.PRIVATE_KEY],
     },
   } : {},
 };
