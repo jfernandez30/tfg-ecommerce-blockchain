@@ -1,4 +1,7 @@
 import { useState } from 'react'
+import { WagmiProvider } from 'wagmi'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { wagmiConfig } from './lib/wagmi'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import { CartProvider } from './context/CartContext'
 import LoginPage from './pages/LoginPage'
@@ -7,12 +10,16 @@ import CatalogPage from './pages/CatalogPage'
 import CheckoutPage from './pages/CheckoutPage'
 import OrderSuccessPage from './pages/OrderSuccessPage'
 
+const queryClient = new QueryClient()
+
 type Page = 'catalog' | 'checkout' | 'success'
 
 function AppContent() {
   const { user, loading } = useAuth()
   const [showRegister, setShowRegister] = useState(false)
   const [page, setPage] = useState<Page>('catalog')
+  const [lastOrderId, setLastOrderId] = useState<string | null>(null)
+  const [lastTxHash, setLastTxHash] = useState<string | null>(null)
 
   if (loading) {
     return (
@@ -32,7 +39,11 @@ function AppContent() {
     return (
       <CheckoutPage
         onBack={() => setPage('catalog')}
-        onSuccess={() => setPage('success')}
+        onSuccess={(orderId, txHash) => {
+          setLastOrderId(orderId)
+          setLastTxHash(txHash || null)
+          setPage('success')
+        }}
       />
     )
   }
@@ -40,6 +51,8 @@ function AppContent() {
   if (page === 'success') {
     return (
       <OrderSuccessPage
+        orderId={lastOrderId}
+        txHash={lastTxHash}
         onContinue={() => setPage('catalog')}
       />
     )
@@ -54,10 +67,14 @@ function AppContent() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <CartProvider>
-        <AppContent />
-      </CartProvider>
-    </AuthProvider>
+    <WagmiProvider config={wagmiConfig}>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <CartProvider>
+            <AppContent />
+          </CartProvider>
+        </AuthProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
   )
 }

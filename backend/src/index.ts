@@ -2,6 +2,7 @@ import express from 'express'
 import cors from 'cors'
 import dotenv from 'dotenv'
 import authRoutes from './routes/auth.routes'
+import siweRoutes from './routes/siwe.routes'
 import productRoutes from './routes/product.routes'
 import categoryRoutes from './routes/category.routes'
 import orderRoutes from './routes/order.routes'
@@ -23,6 +24,7 @@ app.get('/health', (req, res) => {
 })
 
 app.use('/api/auth', authRoutes)
+app.use('/api/siwe', siweRoutes)
 app.use('/api/products', productRoutes)
 app.use('/api/categories', categoryRoutes)
 app.use('/api/orders', orderRoutes)

@@ -5,7 +5,7 @@ import { AuthRequest } from '../middleware/auth'
 export const createOrder = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const userId = req.userId!
-    const { items } = req.body
+    const { items, txHash, blockchainStatus } = req.body
 
     if (!items || items.length === 0) {
       res.status(400).json({ error: 'El pedido debe contener al menos un producto' })
@@ -38,11 +38,13 @@ export const createOrder = async (req: AuthRequest, res: Response): Promise<void
       data: {
         userId,
         total,
+        txHash: txHash || null,
+        blockchainStatus: blockchainStatus || 'UNREGISTERED',
         items: { create: orderItems }
       },
       include: {
         items: { include: { product: true } },
-        user: { select: { id: true, email: true, name: true } }
+        user: { select: { id: true, email: true, name: true, walletAddress: true } }
       }
     })
 
@@ -92,6 +94,31 @@ export const getOrder = async (req: AuthRequest, res: Response): Promise<void> =
     res.json({ order })
   } catch (error) {
     console.error('Error obteniendo pedido:', error)
+    res.status(500).json({ error: 'Error interno del servidor' })
+  }
+}
+
+export const updateBlockchainStatus = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const id = String(req.params.id)
+    const userId = req.userId!
+    const { txHash } = req.body
+
+    const order = await prisma.order.findFirst({ where: { id, userId } })
+
+    if (!order) {
+      res.status(404).json({ error: 'Pedido no encontrado' })
+      return
+    }
+
+    const updated = await prisma.order.update({
+      where: { id },
+      data: { txHash, blockchainStatus: 'CONFIRMED' }
+    })
+
+    res.json({ order: updated })
+  } catch (error) {
+    console.error('Error actualizando blockchain status:', error)
     res.status(500).json({ error: 'Error interno del servidor' })
   }
 }

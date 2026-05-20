@@ -48,7 +48,7 @@ export default function CatalogPage({ onCheckout }: CatalogPageProps) {
           <h1 className="text-xl font-bold text-indigo-600">TFG Ecommerce</h1>
           <div className="flex items-center gap-4">
             <span className="text-sm text-gray-600 hidden sm:block">
-              Hola, {user?.name || user?.email}
+              Hola, {user?.name || user?.email || (user?.walletAddress ? user.walletAddress.slice(0, 6) + '...' + user.walletAddress.slice(-4) : '')}
             </span>
             <button
               onClick={() => setCartOpen(true)}
