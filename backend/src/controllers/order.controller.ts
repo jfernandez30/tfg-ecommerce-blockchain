@@ -5,7 +5,7 @@ import { AuthRequest } from '../middleware/auth'
 export const createOrder = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const userId = req.userId!
-    const { items, txHash, blockchainStatus } = req.body
+    const { items, txHash, blockchainStatus, shippingName, shippingEmail, shippingAddress, shippingCity, shippingPostal, shippingCountry } = req.body
 
     if (!items || items.length === 0) {
       res.status(400).json({ error: 'El pedido debe contener al menos un producto' })
@@ -40,6 +40,12 @@ export const createOrder = async (req: AuthRequest, res: Response): Promise<void
         total,
         txHash: txHash || null,
         blockchainStatus: blockchainStatus || 'UNREGISTERED',
+        shippingName: shippingName || null,
+        shippingEmail: shippingEmail || null,
+        shippingAddress: shippingAddress || null,
+        shippingCity: shippingCity || null,
+        shippingPostal: shippingPostal || null,
+        shippingCountry: shippingCountry || null,
         items: { create: orderItems }
       },
       include: {
