@@ -72,48 +72,44 @@ export default function CheckoutPage({ onBack, onSuccess }: CheckoutPageProps) {
         shippingCountry: shipping.country
       }
 
+      // Paso 1: crear pedido en BD primero para obtener el ID real
+      setStep('saving')
+      const data = await api.post('/api/orders', {
+        items: orderItems,
+        ...shippingData
+      })
+
+      if (!data.order) {
+        setError(data.error || 'Error al crear el pedido')
+        return
+      }
+
+      const realOrderId = data.order.id
+
       if (isWeb3User) {
+        // Paso 2: registrar el ID real en blockchain
         setStep('blockchain')
-        const tempOrderId = `order-${Date.now()}-${address?.slice(2, 8)}`
         const totalInCents = BigInt(Math.round(total * 100))
 
         const txHash = await writeContractAsync({
           address: CONTRACT_ADDRESS,
           abi: CONTRACT_ABI,
           functionName: 'registerOrder',
-          args: [tempOrderId, totalInCents],
+          args: [realOrderId, totalInCents],
           gas: 300000n,
           maxFeePerGas: 30000000000n,
           maxPriorityFeePerGas: 25000000000n
         })
 
+        // Paso 3: guardar el txHash en el pedido de BD
         setStep('saving')
-        const data = await api.post('/api/orders', {
-          items: orderItems,
-          txHash,
-          blockchainStatus: 'CONFIRMED',
-          ...shippingData
-        })
+        await api.put(`/api/orders/${realOrderId}/blockchain`, { txHash })
 
-        if (data.order) {
-          clearCart()
-          onSuccess(data.order.id, txHash as string)
-        } else {
-          setError(data.error || 'Error al guardar el pedido')
-        }
+        clearCart()
+        onSuccess(realOrderId, txHash as string)
       } else {
-        setStep('saving')
-        const data = await api.post('/api/orders', {
-          items: orderItems,
-          ...shippingData
-        })
-
-        if (data.order) {
-          clearCart()
-          onSuccess(data.order.id)
-        } else {
-          setError(data.error || 'Error al crear el pedido')
-        }
+        clearCart()
+        onSuccess(realOrderId)
       }
     } catch (err: any) {
       setError(err.message || 'Error al procesar el pedido')
