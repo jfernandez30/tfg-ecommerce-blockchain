@@ -9,10 +9,11 @@ import RegisterPage from './pages/RegisterPage'
 import CatalogPage from './pages/CatalogPage'
 import CheckoutPage from './pages/CheckoutPage'
 import OrderSuccessPage from './pages/OrderSuccessPage'
+import MyOrdersPage from './pages/MyOrdersPage'
 
 const queryClient = new QueryClient()
 
-type Page = 'catalog' | 'checkout' | 'success'
+type Page = 'catalog' | 'checkout' | 'success' | 'my-orders'
 
 function AppContent() {
   const { user, loading } = useAuth()
@@ -58,9 +59,18 @@ function AppContent() {
     )
   }
 
+  if (page === 'my-orders') {
+    return (
+      <MyOrdersPage
+        onBack={() => setPage('catalog')}
+      />
+    )
+  }
+
   return (
     <CatalogPage
       onCheckout={() => setPage('checkout')}
+      onMyOrders={() => setPage('my-orders')}
     />
   )
 }

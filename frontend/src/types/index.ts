@@ -41,6 +41,12 @@ export interface Order {
   total: string
   txHash?: string
   blockchainStatus: 'UNREGISTERED' | 'PENDING' | 'CONFIRMED'
+  shippingName?: string
+  shippingEmail?: string
+  shippingAddress?: string
+  shippingCity?: string
+  shippingPostal?: string
+  shippingCountry?: string
   createdAt: string
   items: OrderItem[]
 }
@@ -49,5 +55,3 @@ export interface AuthResponse {
   user: User
   token: string
 }
-
-

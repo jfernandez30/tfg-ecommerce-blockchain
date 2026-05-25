@@ -7,9 +7,10 @@ import CartDrawer from '../components/CartDrawer'
 
 interface CatalogPageProps {
   onCheckout: () => void
+  onMyOrders: () => void
 }
 
-export default function CatalogPage({ onCheckout }: CatalogPageProps) {
+export default function CatalogPage({ onCheckout, onMyOrders }: CatalogPageProps) {
   const { user, logout } = useAuth()
   const { addItem, itemCount } = useCart()
   const [products, setProducts] = useState<Product[]>([])
@@ -41,6 +42,10 @@ export default function CatalogPage({ onCheckout }: CatalogPageProps) {
     setTimeout(() => setAdded(null), 1500)
   }
 
+  const walletShort = user?.walletAddress
+    ? `${user.walletAddress.slice(0, 6)}...${user.walletAddress.slice(-4)}`
+    : null
+
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow-sm sticky top-0 z-10">
@@ -48,8 +53,14 @@ export default function CatalogPage({ onCheckout }: CatalogPageProps) {
           <h1 className="text-xl font-bold text-indigo-600">TFG Ecommerce</h1>
           <div className="flex items-center gap-4">
             <span className="text-sm text-gray-600 hidden sm:block">
-              Hola, {user?.name || user?.email || (user?.walletAddress ? user.walletAddress.slice(0, 6) + '...' + user.walletAddress.slice(-4) : '')}
+              Hola, {user?.name || user?.email || walletShort}
             </span>
+            <button
+              onClick={onMyOrders}
+              className="text-sm text-gray-500 hover:text-indigo-600 transition"
+            >
+              Mis pedidos
+            </button>
             <button
               onClick={() => setCartOpen(true)}
               className="relative p-2 text-gray-600 hover:text-indigo-600 transition"
@@ -126,7 +137,7 @@ export default function CatalogPage({ onCheckout }: CatalogPageProps) {
                         : 'bg-indigo-600 text-white hover:bg-indigo-700'
                     } disabled:opacity-50 disabled:cursor-not-allowed`}
                   >
-                    {added === product.id ? '✓ Añadido' : product.stock === 0 ? 'Sin stock' : 'Añadir al carrito'}
+                    {added === product.id ? 'Añadido' : product.stock === 0 ? 'Sin stock' : 'Añadir al carrito'}
                   </button>
                 </div>
               </div>

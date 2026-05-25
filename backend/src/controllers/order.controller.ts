@@ -6,7 +6,8 @@ export const createOrder = async (req: AuthRequest, res: Response): Promise<void
   try {
     const userId = req.userId!
     const { items, txHash, blockchainStatus, shippingName, shippingEmail, shippingAddress, shippingCity, shippingPostal, shippingCountry } = req.body
-
+    console.log('blockchainStatus recibido:', blockchainStatus)
+    
     if (!items || items.length === 0) {
       res.status(400).json({ error: 'El pedido debe contener al menos un producto' })
       return
@@ -39,7 +40,7 @@ export const createOrder = async (req: AuthRequest, res: Response): Promise<void
         userId,
         total,
         txHash: txHash || null,
-        blockchainStatus: blockchainStatus || 'UNREGISTERED',
+        status: txHash ? 'CONFIRMED' : 'PENDING',
         shippingName: shippingName || null,
         shippingEmail: shippingEmail || null,
         shippingAddress: shippingAddress || null,
@@ -119,7 +120,11 @@ export const updateBlockchainStatus = async (req: AuthRequest, res: Response): P
 
     const updated = await prisma.order.update({
       where: { id },
-      data: { txHash, blockchainStatus: 'CONFIRMED' }
+      data: { 
+        txHash, 
+        blockchainStatus: 'CONFIRMED',
+        status: 'CONFIRMED'
+      }
     })
 
     res.json({ order: updated })
