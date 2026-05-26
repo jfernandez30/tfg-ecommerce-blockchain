@@ -22,68 +22,95 @@ export default function RegisterPage({ onSwitch }: { onSwitch: () => void }) {
     }
   }
 
+  const inputClass = "w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500 transition"
+
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-      <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Crear cuenta</h1>
-        <p className="text-gray-500 mb-6">Regístrate para empezar a comprar</p>
+    <div className="min-h-screen bg-zinc-950 flex">
+      <div className="hidden lg:flex flex-1 bg-zinc-900 border-r border-zinc-800 flex-col justify-between p-12">
+        <div>
+          <h1 className="text-2xl font-bold text-white">TFG Ecommerce</h1>
+          <p className="text-zinc-500 text-sm mt-1">Blockchain powered marketplace</p>
+        </div>
+        <div className="space-y-6">
+          <div className="flex items-start gap-4">
+            <div className="w-10 h-10 bg-indigo-500/10 border border-indigo-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
+              <svg className="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-white">Cuenta gratuita</p>
+              <p className="text-xs text-zinc-500 mt-0.5">Regístrate en segundos y empieza a comprar</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-4">
+            <div className="w-10 h-10 bg-indigo-500/10 border border-indigo-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
+              <svg className="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-white">Compras verificadas</p>
+              <p className="text-xs text-zinc-500 mt-0.5">Tus pedidos quedan registrados en blockchain</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-4">
+            <div className="w-10 h-10 bg-indigo-500/10 border border-indigo-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
+              <svg className="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-white">O usa tu cartera</p>
+              <p className="text-xs text-zinc-500 mt-0.5">También puedes acceder con MetaMask directamente</p>
+            </div>
+          </div>
+        </div>
+        <p className="text-xs text-zinc-600">TFG · UCAM · Ingeniería Informática · 2026</p>
+      </div>
 
-        {error && (
-          <div className="bg-red-50 text-red-600 rounded-lg px-4 py-3 mb-4 text-sm">
-            {error}
+      <div className="flex-1 flex items-center justify-center px-6 py-12">
+        <div className="w-full max-w-sm">
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-white">Crear cuenta</h2>
+            <p className="text-zinc-500 text-sm mt-1">Regístrate para empezar a comprar</p>
           </div>
-        )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
-            <input
-              type="text"
-              value={name}
-              onChange={e => setName(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              placeholder="Tu nombre"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              placeholder="tu@email.com"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
-            <input
-              type="password"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              placeholder="••••••••"
-              required
-              minLength={6}
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-indigo-600 text-white rounded-lg py-2 font-medium hover:bg-indigo-700 transition disabled:opacity-50"
-          >
-            {loading ? 'Creando cuenta...' : 'Crear cuenta'}
-          </button>
-        </form>
+          {error && (
+            <div className="bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl px-4 py-3 mb-6 text-sm">
+              {error}
+            </div>
+          )}
 
-        <p className="text-center text-sm text-gray-500 mt-6">
-          ¿Ya tienes cuenta?{' '}
-          <button onClick={onSwitch} className="text-indigo-600 hover:underline font-medium">
-            Inicia sesión
-          </button>
-        </p>
+          <form onSubmit={handleSubmit} className="space-y-3">
+            <div>
+              <label className="block text-xs font-medium text-zinc-400 mb-1.5">Nombre</label>
+              <input type="text" value={name} onChange={e => setName(e.target.value)} className={inputClass} placeholder="Tu nombre" required />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-zinc-400 mb-1.5">Email</label>
+              <input type="email" value={email} onChange={e => setEmail(e.target.value)} className={inputClass} placeholder="tu@email.com" required />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-zinc-400 mb-1.5">Contraseña</label>
+              <input type="password" value={password} onChange={e => setPassword(e.target.value)} className={inputClass} placeholder="Mínimo 6 caracteres" required minLength={6} />
+            </div>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl py-3 font-semibold text-sm transition disabled:opacity-50 mt-2"
+            >
+              {loading ? 'Creando cuenta...' : 'Crear cuenta'}
+            </button>
+          </form>
+
+          <p className="text-center text-sm text-zinc-600 mt-6">
+            Ya tienes cuenta?{' '}
+            <button onClick={onSwitch} className="text-indigo-400 hover:text-indigo-300 transition font-medium">
+              Inicia sesión
+            </button>
+          </p>
+        </div>
       </div>
     </div>
   )
