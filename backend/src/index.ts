@@ -6,6 +6,7 @@ import siweRoutes from './routes/siwe.routes'
 import productRoutes from './routes/product.routes'
 import categoryRoutes from './routes/category.routes'
 import orderRoutes from './routes/order.routes'
+import adminRoutes from './routes/admin.routes'
 
 dotenv.config()
 
@@ -28,6 +29,7 @@ app.use('/api/siwe', siweRoutes)
 app.use('/api/products', productRoutes)
 app.use('/api/categories', categoryRoutes)
 app.use('/api/orders', orderRoutes)
+app.use('/api/admin', adminRoutes)
 
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en puerto ${PORT}`)

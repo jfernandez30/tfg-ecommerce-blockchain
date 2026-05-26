@@ -10,10 +10,13 @@ import CatalogPage from './pages/CatalogPage'
 import CheckoutPage from './pages/CheckoutPage'
 import OrderSuccessPage from './pages/OrderSuccessPage'
 import MyOrdersPage from './pages/MyOrdersPage'
+import AdminPage from './pages/AdminPage'
+import ProductDetailPage from './pages/ProductDetailPage'
+import type { Product } from './types/index'
 
 const queryClient = new QueryClient()
 
-type Page = 'catalog' | 'checkout' | 'success' | 'my-orders'
+type Page = 'catalog' | 'checkout' | 'success' | 'my-orders' | 'admin' | 'product'
 
 function AppContent() {
   const { user, loading } = useAuth()
@@ -21,11 +24,12 @@ function AppContent() {
   const [page, setPage] = useState<Page>('catalog')
   const [lastOrderId, setLastOrderId] = useState<string | null>(null)
   const [lastTxHash, setLastTxHash] = useState<string | null>(null)
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-gray-400">Cargando...</div>
+      <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
+        <div className="text-zinc-500">Cargando...</div>
       </div>
     )
   }
@@ -60,8 +64,17 @@ function AppContent() {
   }
 
   if (page === 'my-orders') {
+    return <MyOrdersPage onBack={() => setPage('catalog')} />
+  }
+
+  if (page === 'admin') {
+    return <AdminPage onBack={() => setPage('catalog')} />
+  }
+
+  if (page === 'product' && selectedProduct) {
     return (
-      <MyOrdersPage
+      <ProductDetailPage
+        product={selectedProduct}
         onBack={() => setPage('catalog')}
       />
     )
@@ -71,6 +84,11 @@ function AppContent() {
     <CatalogPage
       onCheckout={() => setPage('checkout')}
       onMyOrders={() => setPage('my-orders')}
+      onAdmin={user.role === 'ADMIN' ? () => setPage('admin') : undefined}
+      onProductDetail={(product) => {
+        setSelectedProduct(product)
+        setPage('product')
+      }}
     />
   )
 }

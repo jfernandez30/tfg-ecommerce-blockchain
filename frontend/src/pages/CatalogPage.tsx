@@ -8,9 +8,11 @@ import CartDrawer from '../components/CartDrawer'
 interface CatalogPageProps {
   onCheckout: () => void
   onMyOrders: () => void
+  onAdmin?: () => void
+  onProductDetail: (product: Product) => void
 }
 
-export default function CatalogPage({ onCheckout, onMyOrders }: CatalogPageProps) {
+export default function CatalogPage({ onCheckout, onMyOrders, onAdmin, onProductDetail }: CatalogPageProps) {
   const { user, logout } = useAuth()
   const { addItem, itemCount } = useCart()
   const [products, setProducts] = useState<Product[]>([])
@@ -36,7 +38,8 @@ export default function CatalogPage({ onCheckout, onMyOrders }: CatalogPageProps
       .finally(() => setLoading(false))
   }, [selectedCategory, search])
 
-  const handleAddToCart = (product: Product) => {
+  const handleAddToCart = (e: React.MouseEvent, product: Product) => {
+    e.stopPropagation()
     addItem(product)
     setAdded(product.id)
     setTimeout(() => setAdded(null), 1500)
@@ -47,54 +50,55 @@ export default function CatalogPage({ onCheckout, onMyOrders }: CatalogPageProps
     : null
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm sticky top-0 z-10">
+    <div className="min-h-screen bg-zinc-950 text-white">
+      <header className="bg-zinc-900 border-b border-zinc-800 sticky top-0 z-10">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <h1 className="text-xl font-bold text-indigo-600">TFG Ecommerce</h1>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-600 hidden sm:block">
-              Hola, {user?.name || user?.email || walletShort}
+          <h1 className="text-lg font-bold text-white tracking-tight">TFG Ecommerce</h1>
+          <div className="flex items-center gap-5">
+            <span className="text-sm text-zinc-400 hidden sm:block">
+              {user?.name || user?.email || walletShort}
             </span>
-            <button
-              onClick={onMyOrders}
-              className="text-sm text-gray-500 hover:text-indigo-600 transition"
-            >
+            {onAdmin && (
+              <button onClick={onAdmin} className="text-sm text-zinc-400 hover:text-white transition">
+                Admin
+              </button>
+            )}
+            <button onClick={onMyOrders} className="text-sm text-zinc-400 hover:text-white transition">
               Mis pedidos
             </button>
             <button
               onClick={() => setCartOpen(true)}
-              className="relative p-2 text-gray-600 hover:text-indigo-600 transition"
+              className="relative p-2 text-zinc-400 hover:text-white transition"
             >
-              🛒
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              </svg>
               {itemCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-indigo-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+                <span className="absolute -top-1 -right-1 bg-indigo-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center font-bold">
                   {itemCount}
                 </span>
               )}
             </button>
-            <button
-              onClick={logout}
-              className="text-sm text-gray-500 hover:text-red-500 transition"
-            >
-              Cerrar sesión
+            <button onClick={logout} className="text-sm text-zinc-400 hover:text-red-400 transition">
+              Salir
             </button>
           </div>
         </div>
       </header>
 
       <main className="max-w-6xl mx-auto px-4 py-8">
-        <div className="flex flex-col sm:flex-row gap-4 mb-8">
+        <div className="flex flex-col sm:flex-row gap-3 mb-8">
           <input
             type="text"
             placeholder="Buscar productos..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="flex-1 border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="flex-1 bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500 transition"
           />
           <select
             value={selectedCategory}
             onChange={e => setSelectedCategory(e.target.value)}
-            className="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-zinc-300 focus:outline-none focus:border-indigo-500 transition"
           >
             <option value="">Todas las categorías</option>
             {categories.map(cat => (
@@ -104,38 +108,42 @@ export default function CatalogPage({ onCheckout, onMyOrders }: CatalogPageProps
         </div>
 
         {loading ? (
-          <div className="text-center py-12 text-gray-400">Cargando productos...</div>
+          <div className="text-center py-20 text-zinc-500">Cargando productos...</div>
         ) : products.length === 0 ? (
-          <div className="text-center py-12 text-gray-400">
-            No hay productos disponibles todavía.
-          </div>
+          <div className="text-center py-20 text-zinc-500">No hay productos disponibles.</div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {products.map(product => (
-              <div key={product.id} className="bg-white rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition">
-                <div className="h-48 bg-gray-100 flex items-center justify-center">
+              <div
+                key={product.id}
+                onClick={() => onProductDetail(product)}
+                className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-600 transition cursor-pointer group"
+              >
+                <div className="h-44 bg-zinc-800 flex items-center justify-center overflow-hidden">
                   {product.imageUrl ? (
-                    <img src={product.imageUrl} alt={product.name} className="h-full w-full object-cover" />
+                    <img src={product.imageUrl} alt={product.name} className="h-full w-full object-cover group-hover:scale-105 transition duration-300" />
                   ) : (
-                    <span className="text-gray-300 text-4xl">📦</span>
+                    <svg className="w-12 h-12 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                    </svg>
                   )}
                 </div>
                 <div className="p-4">
-                  <span className="text-xs text-indigo-500 font-medium">{product.category.name}</span>
-                  <h3 className="font-semibold text-gray-900 mt-1">{product.name}</h3>
-                  <p className="text-sm text-gray-500 mt-1 line-clamp-2">{product.description}</p>
+                  <span className="text-xs text-indigo-400 font-medium">{product.category.name}</span>
+                  <h3 className="font-semibold text-white mt-1 text-sm">{product.name}</h3>
+                  <p className="text-xs text-zinc-500 mt-1 line-clamp-2">{product.description}</p>
                   <div className="flex items-center justify-between mt-4">
-                    <span className="text-lg font-bold text-indigo-600">{Number(product.price).toFixed(2)} €</span>
-                    <span className="text-xs text-gray-400">{product.stock} en stock</span>
+                    <span className="text-base font-bold text-white">{Number(product.price).toFixed(2)} €</span>
+                    <span className="text-xs text-zinc-500">{product.stock} uds.</span>
                   </div>
                   <button
-                    onClick={() => handleAddToCart(product)}
+                    onClick={(e) => handleAddToCart(e, product)}
                     disabled={product.stock === 0}
-                    className={`w-full mt-3 rounded-lg py-2 text-sm font-medium transition ${
+                    className={`w-full mt-3 rounded-xl py-2 text-sm font-medium transition ${
                       added === product.id
                         ? 'bg-green-500 text-white'
-                        : 'bg-indigo-600 text-white hover:bg-indigo-700'
-                    } disabled:opacity-50 disabled:cursor-not-allowed`}
+                        : 'bg-indigo-600 hover:bg-indigo-500 text-white'
+                    } disabled:opacity-30 disabled:cursor-not-allowed`}
                   >
                     {added === product.id ? 'Añadido' : product.stock === 0 ? 'Sin stock' : 'Añadir al carrito'}
                   </button>
