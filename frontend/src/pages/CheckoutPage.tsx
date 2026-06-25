@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useWriteContract, useAccount } from 'wagmi'
+import { useWriteContract, useAccount, usePublicClient } from 'wagmi'
 import { useCart } from '../context/CartContext'
 import { useAuth } from '../context/AuthContext'
 import { api } from '../lib/api'
@@ -31,6 +31,7 @@ export default function CheckoutPage({ onBack, onSuccess }: CheckoutPageProps) {
   const isWeb3User = authMethod === 'siwe'
 
   const { writeContractAsync } = useWriteContract()
+  const publicClient = usePublicClient()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [step, setStep] = useState<'idle' | 'blockchain' | 'saving'>('idle')
@@ -80,7 +81,7 @@ export default function CheckoutPage({ onBack, onSuccess }: CheckoutPageProps) {
       if (isWeb3User) {
         setStep('blockchain')
         const totalInCents = BigInt(Math.round(total * 100))
-        const txHash = await writeContractAsync({
+        const hash = await writeContractAsync({
           address: CONTRACT_ADDRESS,
           abi: CONTRACT_ABI,
           functionName: 'registerOrder',
@@ -90,6 +91,8 @@ export default function CheckoutPage({ onBack, onSuccess }: CheckoutPageProps) {
           maxPriorityFeePerGas: 25000000000n
         })
         setStep('saving')
+        const receipt = await publicClient!.waitForTransactionReceipt({ hash })
+        const txHash = receipt.transactionHash
         await api.put(`/api/orders/${realOrderId}/blockchain`, { txHash })
         clearCart()
         onSuccess(realOrderId, txHash as string)

@@ -10,6 +10,17 @@ import adminRoutes from './routes/admin.routes'
 
 dotenv.config()
 
+// Validación de variables de entorno críticas al arranque
+if (!process.env.JWT_SECRET) {
+  console.error('ERROR: JWT_SECRET no está definido. El servidor no puede arrancar.')
+  process.exit(1)
+}
+
+if (!process.env.ALCHEMY_KEY) {
+  console.error('ERROR: ALCHEMY_KEY no está definida. El servidor no puede arrancar.')
+  process.exit(1)
+}
+
 const app = express()
 const PORT = process.env.PORT || 3001
 
