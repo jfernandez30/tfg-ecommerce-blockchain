@@ -15,7 +15,6 @@ import ProductDetailPage from './pages/ProductDetailPage'
 import type { Product } from './types/index'
 
 const queryClient = new QueryClient()
-
 type Page = 'catalog' | 'checkout' | 'success' | 'my-orders' | 'admin' | 'product'
 
 function AppContent() {
@@ -25,6 +24,7 @@ function AppContent() {
   const [lastOrderId, setLastOrderId] = useState<string | null>(null)
   const [lastTxHash, setLastTxHash] = useState<string | null>(null)
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
+  const [catalogKey, setCatalogKey] = useState(0)
 
   if (loading) {
     return (
@@ -58,7 +58,10 @@ function AppContent() {
       <OrderSuccessPage
         orderId={lastOrderId}
         txHash={lastTxHash}
-        onContinue={() => setPage('catalog')}
+        onContinue={() => {
+          setCatalogKey(k => k + 1)
+          setPage('catalog')
+        }}
       />
     )
   }
@@ -82,6 +85,7 @@ function AppContent() {
 
   return (
     <CatalogPage
+      key={catalogKey}
       onCheckout={() => setPage('checkout')}
       onMyOrders={() => setPage('my-orders')}
       onAdmin={user.role === 'ADMIN' ? () => setPage('admin') : undefined}
