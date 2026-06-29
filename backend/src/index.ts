@@ -22,7 +22,6 @@ if (!process.env.ALCHEMY_KEY) {
 }
 
 const app = express()
-const PORT = process.env.PORT || 3001
 
 app.use(cors({
   origin: process.env.FRONTEND_URL || 'http://localhost:5173',
@@ -42,8 +41,12 @@ app.use('/api/categories', categoryRoutes)
 app.use('/api/orders', orderRoutes)
 app.use('/api/admin', adminRoutes)
 
-app.listen(PORT, () => {
-  console.log(`Servidor corriendo en puerto ${PORT}`)
-})
+// Solo arranca el servidor en local, no en Vercel
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 3001
+  app.listen(PORT, () => {
+    console.log(`Servidor corriendo en puerto ${PORT}`)
+  })
+}
 
 export default app
