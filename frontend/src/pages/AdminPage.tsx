@@ -41,13 +41,6 @@ export default function AdminPage({ onBack }: AdminPageProps) {
     DELIVERED: 'Entregado', CANCELLED: 'Cancelado'
   }
 
-  const statusColor: Record<string, string> = {
-    PENDING: 'bg-yellow-500/10 text-yellow-400',
-    CONFIRMED: 'bg-blue-500/10 text-blue-400',
-    SHIPPED: 'bg-indigo-500/10 text-indigo-400',
-    DELIVERED: 'bg-green-500/10 text-green-400',
-    CANCELLED: 'bg-red-500/10 text-red-400'
-  }
 
   const handleUpdateOrderStatus = async (id: string, status: string) => {
     await api.put(`/api/admin/orders/${id}/status`, { status })
