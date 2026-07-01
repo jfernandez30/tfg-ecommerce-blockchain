@@ -58,10 +58,16 @@ export default function CatalogPage({ onCheckout, onMyOrders, onAdmin, onProduct
   const getCategoryColor = (name: string) => categoryColors[name] || 'text-indigo-400'
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-white">
+    <div className="min-h-screen bg-zinc-950 text-white flex flex-col">
+      {/* Header */}
       <header className="bg-zinc-900 border-b border-zinc-800 sticky top-0 z-10">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <h1 className="text-base font-bold text-white tracking-tight">TFG Ecommerce</h1>
+          <div className="flex items-center gap-2">
+            <svg className="w-6 h-6 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+            </svg>
+            <h1 className="text-base font-bold text-white tracking-tight">TFG Ecommerce</h1>
+          </div>
           <div className="flex items-center gap-5">
             <span className="text-sm text-zinc-400 hidden sm:block">
               {user?.name || user?.email || walletShort}
@@ -85,18 +91,40 @@ export default function CatalogPage({ onCheckout, onMyOrders, onAdmin, onProduct
         </div>
       </header>
 
+      {/* Hero */}
       <div className="border-b border-zinc-900" style={{background: 'linear-gradient(180deg, #111 0%, #0a0a0a 100%)'}}>
         <div className="max-w-6xl mx-auto px-4 py-10">
           <div className="inline-flex items-center gap-2 bg-zinc-900 border border-indigo-500/30 rounded-full px-3 py-1.5 mb-4">
-            <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full"></div>
+            <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse"></div>
             <span className="text-xs text-indigo-400 font-medium">Powered by Polygon Amoy</span>
           </div>
           <h2 className="text-2xl font-bold text-white mb-2">Compra con confianza blockchain</h2>
-          <p className="text-sm text-zinc-500">Cada pedido queda registrado de forma inmutable en la red.</p>
+          <p className="text-sm text-zinc-500 mb-6">Cada pedido queda registrado de forma inmutable en la red.</p>
+          <div className="flex flex-wrap gap-4">
+            <div className="flex items-center gap-2 bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5">
+              <svg className="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+              <span className="text-xs text-zinc-400">Autenticación descentralizada</span>
+            </div>
+            <div className="flex items-center gap-2 bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5">
+              <svg className="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+              </svg>
+              <span className="text-xs text-zinc-400">Registro inmutable on-chain</span>
+            </div>
+            <div className="flex items-center gap-2 bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5">
+              <svg className="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0zM2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+              <span className="text-xs text-zinc-400">Verificable en Polygonscan</span>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 py-6">
+      {/* Catálogo */}
+      <div className="max-w-6xl mx-auto px-4 py-6 flex-1 w-full">
         <div className="flex flex-col sm:flex-row gap-3 mb-6">
           <input
             type="text"
@@ -162,7 +190,7 @@ export default function CatalogPage({ onCheckout, onMyOrders, onAdmin, onProduct
                     {product.category.name}
                   </span>
                   <h3 className="font-semibold text-white mt-1 text-sm">{product.name}</h3>
-                  <p className="text-xs text-zinc-500 mt-1 line-clamp-2">{product.description}</p>
+                  <p className="text-xs text-zinc-500 mt-1 line-clamp-2 h-8">{product.description}</p>
                   <div className="flex items-center justify-between mt-4">
                     <span className="text-base font-bold text-white">{Number(product.price).toFixed(2)} €</span>
                     <span className="text-xs text-zinc-500">{product.stock} uds.</span>
@@ -184,6 +212,34 @@ export default function CatalogPage({ onCheckout, onMyOrders, onAdmin, onProduct
           </div>
         )}
       </div>
+
+      {/* Footer */}
+      <footer className="border-t border-zinc-800 bg-zinc-900 mt-12">
+        <div className="max-w-6xl mx-auto px-4 py-8">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
+              <svg className="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+              </svg>
+              <span className="text-sm font-semibold text-white">TFG Ecommerce</span>
+            </div>
+            <div className="flex items-center gap-6 text-xs text-zinc-500">
+              <span>Contrato:</span>
+              <a
+                href="https://amoy.polygonscan.com/address/0x89839aadba87550f8e90a2fb0df65302a8983556"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-indigo-400 hover:text-indigo-300 transition font-mono"
+              >
+                0x8983...3556
+              </a>
+            </div>
+            <p className="text-xs text-zinc-600">
+              &copy; 2026 Jesús Fernández Nicolás · UCAM · Trabajo Fin de Grado
+            </p>
+          </div>
+        </div>
+      </footer>
 
       <CartDrawer
         open={cartOpen}
